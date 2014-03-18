@@ -1,0 +1,10 @@
+Requirements
+
+    Python 2.7
+    python-yaml http://pyyaml.org/wiki/PyYAML
+    pyimgur https://github.com/Damgaard/PyImgur
+    Pillow https://github.com/python-imaging/Pillow 
+
+Installation
+
+    Install dependencies as listed and run mercury.py.

@@ -1,0 +1,4 @@
+out.log
+config.yaml
+**/*.pyc
+**/**/*.pyc
