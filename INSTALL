@@ -4,6 +4,7 @@ Requirements
     python-yaml http://pyyaml.org/wiki/PyYAML
     pyimgur https://github.com/Damgaard/PyImgur
     Pillow https://github.com/python-imaging/Pillow 
+    PyTumblr https://github.com/tumblr/pytumblr
 
 Installation
 
