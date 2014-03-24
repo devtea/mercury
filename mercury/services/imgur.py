@@ -23,9 +23,29 @@ def authenticate(config):
         con = config['db'].connect()
         cur = con.cursor()
         try:
-            con.execute('''create table if not exists services
-                           (service text unique, user_auth_token text)''')
-            cur.execute("""select user_auth_token from services where service = 'imgur'""")
+            con.execute(
+                '''
+                create table if not exists services (
+                    service_id    integer primary key not null,
+                    service_name  text
+                    ) ''')
+            con.execute(
+                '''
+                create table if not exists service_auth (
+                    token_name   text not null,
+                    token_value  text not null,
+                    service_id   integer not null,
+                    foreign key(service_id) references services(service_id)
+                    ) ''')
+            cur.execute(
+                """
+                select token_value
+                from service_auth
+                where token_name = 'refresh_token'
+                and service_id = (
+                    select service_id
+                    from services
+                    where service_name = 'imgur') """)
             auth_token = cur.fetchone()
         finally:
             cur.close()
@@ -57,10 +77,18 @@ def authenticate(config):
             try:
                 con = config['db'].connect()
                 with con:
-                    con.execute("""delete from services where service = 'imgur'""")
+                    con.execute(
+                        """
+                        insert into services (service_name)
+                            values ('imgur') """)
                 with con:
-                    con.execute("""insert into services (service, user_auth_token)
-                                values ('imgur', ?)""", (refresh_token,))
+                    con.execute(
+                        """
+                        insert into service_auth (service_id, token_name, token_value)
+                        values (
+                            (select service_id from services where service_name = 'imgur'),
+                            'refresh_token',
+                            ?) """, (refresh_token,))
             finally:
                 con.close()
         config['imgur']['api_object'] = api_wrapper
@@ -82,8 +110,15 @@ def upload(config, path, title=None, description=None, *args, **kwargs):
     try:
         con = config['db'].connect()
         with con:
-            con.execute("""update services set user_auth_token = ?
-                           where service = 'imgur'""", (api.refresh_token,))
+            con.execute(
+                """
+                update service_auth
+                set token_value = ?
+                where token_name = 'refresh_token'
+                and service_id = (
+                    select service_id
+                    from services
+                    where service_name = 'imgur') """, (api.refresh_token,))
     finally:
         con.close()
     # That housekeeping aside, we can move on to our uploading.
