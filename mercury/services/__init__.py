@@ -1,5 +1,7 @@
 import imgur
+import tumblr
 
 registry = {
-    'imgur': imgur
+    'imgur': imgur,
+    'tumblr': tumblr
 }
