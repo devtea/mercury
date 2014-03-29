@@ -3,3 +3,4 @@ config.yaml
 **/*.pyc
 **/**/*.pyc
 **/**/*.swp
+*.swp

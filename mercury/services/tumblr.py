@@ -27,30 +27,12 @@ def authenticate(config):
         con = config['db'].connect()
         cur = con.cursor()
         try:
-            cur.execute(
-                '''
-                create table if not exists services (
-                    service_id    integer primary key not null,
-                    service_name  text unique
-                    ) ''')
-            con.commit()
-            cur.execute(
-                '''
-                create table if not exists service_auth (
-                    token_name   text not null,
-                    token_value  text not null,
-                    service_id   integer not null,
-                    foreign key(service_id) references services(service_id)
-                    ) ''')
-            con.commit()
             try:
-                log.debug('[tumblr] inserting service name into services')
+                log.debug('[tumblr] Inserting service name into services')
                 with con:
                     con.execute("insert into services (service_name) values ('tumblr')")
-                #cur.execute("insert into services (service_name) values ('tumblr')")
-                #con.commit()
             except IntegrityError:
-                log.debug('[tumblr] found service name in services')
+                log.debug('[tumblr] Found service name in services')
                 pass
             cur.execute(
                 """

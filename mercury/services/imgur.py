@@ -2,6 +2,8 @@
 imgur.py
 imgur.com specific uploader
 '''
+from sqlite3 import IntegrityError
+
 import pyimgur
 
 import mercury.log
@@ -23,20 +25,13 @@ def authenticate(config):
         con = config['db'].connect()
         cur = con.cursor()
         try:
-            con.execute(
-                '''
-                create table if not exists services (
-                    service_id    integer primary key not null,
-                    service_name  text
-                    ) ''')
-            con.execute(
-                '''
-                create table if not exists service_auth (
-                    token_name   text not null,
-                    token_value  text not null,
-                    service_id   integer not null,
-                    foreign key(service_id) references services(service_id)
-                    ) ''')
+            try:
+                log.debug('[imgur] Inserting service name into services')
+                with con:
+                    con.execute("insert into services (service_name) values ('imgur')")
+            except IntegrityError:
+                log.debug('[imgur] Found service name in services')
+                pass
             cur.execute(
                 """
                 select token_value
