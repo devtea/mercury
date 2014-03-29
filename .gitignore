@@ -1,6 +1,5 @@
 out.log
 config.yaml
-**/*.pyc
-**/**/*.pyc
-**/**/*.swp
+*.pyc
 *.swp
+*~
